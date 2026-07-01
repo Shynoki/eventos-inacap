@@ -23,6 +23,9 @@ let eventos = cargarDesdeStorage(); // arreglo principal de objetos
 // Filtros de la vista (no mutan los datos, solo cómo se muestran)
 const filtros = { texto: "", categoria: "" };
 
+// Id del evento que se está editando (null => se está creando uno nuevo)
+let editandoId = null;
+
 /* =========================================================
    2) UTILIDADES REUTILIZABLES
    ========================================================= */
@@ -159,23 +162,40 @@ function validarFormulario() {
    4) OPERACIONES SOBRE LOS DATOS (arreglo de objetos)
    ========================================================= */
 
-/** Crea un objeto-evento normalizado a partir de datos crudos del form. */
-function crearEvento({ nombre, email, fecha, capacidad, categoria }) {
+/** Normaliza (sanitiza/convierte tipos) los datos crudos del formulario.
+    Se reutiliza tanto al crear como al actualizar un evento. */
+function normalizarDatos({ nombre, email, fecha, capacidad, categoria }) {
   return {
-    id: generarId(),
     nombre: sanitizar(nombre),
     email: sanitizar(email).toLowerCase(),
     fecha,
     capacidad: Number(capacidad),
     categoria,
-    creado: Date.now(),
   };
+}
+
+/** Crea un objeto-evento completo (con id y timestamp) a partir de datos crudos. */
+function crearEvento(datos) {
+  return { id: generarId(), ...normalizarDatos(datos), creado: Date.now() };
 }
 
 /** Agrega un evento al arreglo, ordena por fecha y persiste. */
 function agregarEvento(evento) {
   eventos.push(evento);
-  eventos.sort((a, b) => a.fecha.localeCompare(b.fecha)); // más próximos primero
+  ordenarYGuardar();
+}
+
+/** Actualiza un evento existente por id, conservando su id y fecha de creación. */
+function actualizarEvento(id, datos) {
+  const i = eventos.findIndex((ev) => ev.id === id);
+  if (i === -1) return;
+  eventos[i] = { ...eventos[i], ...datos }; // combina: mantiene id/creado, pisa el resto
+  ordenarYGuardar();
+}
+
+/** Ordena por fecha (más próximos primero) y persiste. Evita repetir código. */
+function ordenarYGuardar() {
+  eventos.sort((a, b) => a.fecha.localeCompare(b.fecha));
   guardarEnStorage();
 }
 
@@ -264,15 +284,57 @@ function crearTarjetaEvento(ev) {
     dias === 0 ? "¡Hoy!" : dias === 1 ? "Mañana" : "En " + dias + " días";
   const spanDias = crearNodo("span", "dias-restantes", "⏳ " + etiquetaDias);
 
+  // Contenedor de acciones: Editar + Eliminar
+  const acciones = crearNodo("div", "evento-acciones");
+
+  const btnEditar = crearNodo("button", "btn-editar", "Editar");
+  btnEditar.type = "button";
+  btnEditar.setAttribute("aria-label", "Editar evento " + ev.nombre);
+  btnEditar.addEventListener("click", () => iniciarEdicion(ev.id));
+
   const btnEliminar = crearNodo("button", "btn-eliminar", "Eliminar");
   btnEliminar.type = "button";
   btnEliminar.setAttribute("aria-label", "Eliminar evento " + ev.nombre);
   // Listener directo: evita inline onclick (mejor práctica de seguridad/CSP)
   btnEliminar.addEventListener("click", () => manejarEliminar(ev.id));
 
-  footer.append(spanDias, btnEliminar);
+  acciones.append(btnEditar, btnEliminar);
+  footer.append(spanDias, acciones);
   card.append(top, org, fecha, cupos, footer);
   return card;
+}
+
+/** Carga un evento en el formulario y activa el "modo edición". */
+function iniciarEdicion(id) {
+  const ev = eventos.find((x) => x.id === id);
+  if (!ev) return;
+
+  editandoId = id;
+  const form = document.getElementById("formEvento");
+  form.nombre.value = ev.nombre;
+  form.email.value = ev.email;
+  form.fecha.value = ev.fecha;
+  form.capacidad.value = ev.capacidad;
+  form.categoria.value = ev.categoria;
+  limpiarErrores();
+
+  // Cambia la interfaz para reflejar que se está editando
+  document.getElementById("tituloForm").textContent = "✏️ Editar evento";
+  document.getElementById("btnSubmit").textContent = "Guardar cambios";
+  document.getElementById("btnCancelar").hidden = false;
+  document.querySelector(".form-card").classList.add("editando");
+
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("nombre").focus();
+}
+
+/** Sale del modo edición y restaura el formulario a su estado de "crear". */
+function salirModoEdicion() {
+  editandoId = null;
+  document.getElementById("tituloForm").textContent = "➕ Registrar nuevo evento";
+  document.getElementById("btnSubmit").textContent = "Agregar evento";
+  document.getElementById("btnCancelar").hidden = true;
+  document.querySelector(".form-card").classList.remove("editando");
 }
 
 /**
@@ -330,25 +392,35 @@ function manejarEnvio(e) {
   }
 
   const form = e.target;
-  const evento = crearEvento({
+  const datos = {
     nombre: form.nombre.value,
     email: form.email.value,
     fecha: form.fecha.value,
     capacidad: form.capacidad.value,
     categoria: form.categoria.value,
-  });
+  };
 
-  agregarEvento(evento);
+  if (editandoId) {
+    // MODO EDICIÓN: actualiza el evento existente
+    actualizarEvento(editandoId, normalizarDatos(datos));
+    mostrarToast("✏️ Evento actualizado.", "ok");
+  } else {
+    // MODO CREACIÓN: agrega uno nuevo
+    agregarEvento(crearEvento(datos));
+    mostrarToast("✅ Evento agregado correctamente.", "ok");
+  }
+
   renderizarLista();
-  form.reset();
-  limpiarErrores();
-  mostrarToast("✅ Evento agregado correctamente.", "ok");
+  form.reset(); // dispara la limpieza de errores y la salida del modo edición
 }
 
 function manejarEliminar(id) {
   const ev = eventos.find((x) => x.id === id);
   if (!ev) return;
   if (!confirm(`¿Eliminar el evento "${ev.nombre}"?`)) return;
+
+  // Si se elimina el evento que se estaba editando, se cancela la edición.
+  if (editandoId === id) document.getElementById("formEvento").reset();
 
   // Animación de salida antes de quitarlo del DOM/arreglo.
   const nodo = document.querySelector(`.evento[data-id="${id}"]`);
@@ -416,9 +488,17 @@ function init() {
     input.addEventListener("blur", () => validarCampo(idCampo));
   });
 
-  // Botón "Limpiar": también borra los mensajes de error
+  // Botón "Limpiar"/reset: borra errores y sale del modo edición si estaba activo
   document.getElementById("formEvento").addEventListener("reset", () => {
-    window.setTimeout(limpiarErrores, 0);
+    window.setTimeout(() => {
+      limpiarErrores();
+      if (editandoId) salirModoEdicion();
+    }, 0);
+  });
+
+  // Botón "Cancelar": descarta la edición (reset dispara la limpieza)
+  document.getElementById("btnCancelar").addEventListener("click", () => {
+    document.getElementById("formEvento").reset();
   });
 
   // Búsqueda en vivo

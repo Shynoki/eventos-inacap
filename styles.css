@@ -235,6 +235,23 @@ input.invalido, select.invalido { border-color: var(--danger); }
 }
 .btn-eliminar:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
+.evento-acciones { display: flex; gap: 6px; }
+.btn-editar {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-editar:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Realce del formulario cuando está en modo edición */
+.form-card.editando { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108, 43, 217, 0.15); }
+
 /* ---------------- Estado vacío ---------------- */
 .vacio {
   text-align: center;
