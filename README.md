@@ -104,9 +104,8 @@ están marcados con comentarios `// [IA] ...`.
 
 ---
 
-## 👥 Autores
+## 👤 Autor
 
-- Integrante 1 — *Nombre Apellido*
-- Integrante 2 — *Nombre Apellido*
+- **Yhan Medina Rucal**
 
-Asignatura: **Front End** · Docente: *________* · INACAP Maipú · 2025.
+Asignatura: **Front End** · Docente: **Patricio Araya** · INACAP Maipú · 2026.
