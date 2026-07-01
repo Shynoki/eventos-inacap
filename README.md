@@ -11,10 +11,8 @@ estructuras de datos (arreglos de objetos) y funciones reutilizables.
 
 ## 🚀 Demo y despliegue
 
-- **Repositorio:** `https://github.com/<tu-usuario>/eventos-inacap`
-- **Despliegue (GitHub Pages):** `https://<tu-usuario>.github.io/eventos-inacap/`
-
-> Reemplaza `<tu-usuario>` por tu usuario real de GitHub al publicar.
+- **Repositorio:** https://github.com/Shynoki/eventos-inacap
+- **Despliegue (GitHub Pages):** https://shynoki.github.io/eventos-inacap/
 
 ---
 
