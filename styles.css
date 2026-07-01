@@ -1,0 +1,285 @@
+/* =========================================================
+   Eventos INACAP · Hoja de estilos
+   Diseño responsive con variables CSS + modo claro/oscuro
+   ========================================================= */
+
+:root {
+  --brand: #e6007e;          /* rosa institucional (referencia INACAP/portal) */
+  --brand-dark: #b4005f;
+  --accent: #6c2bd9;
+  --bg: #f7f4f8;
+  --surface: #ffffff;
+  --surface-2: #faf7fb;
+  --text: #2a1a2f;
+  --text-soft: #6b5b70;
+  --border: #ecdff0;
+  --ok: #1a9e6a;
+  --danger: #d92d54;
+  --shadow: 0 10px 30px rgba(108, 43, 217, 0.08);
+  --radius: 16px;
+}
+
+/* Modo oscuro mediante atributo en <html data-tema="oscuro"> */
+[data-tema="oscuro"] {
+  --brand: #ff3fa4;
+  --brand-dark: #e6007e;
+  --accent: #a97bff;
+  --bg: #150f19;
+  --surface: #211826;
+  --surface-2: #2a1f30;
+  --text: #f4eef6;
+  --text-soft: #b9a9c0;
+  --border: #3a2c42;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: radial-gradient(1200px 600px at 100% -10%, rgba(230, 0, 126, 0.10), transparent 60%),
+              var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1, h2, h3 { font-family: "Poppins", sans-serif; }
+
+/* ---------------- Encabezado ---------------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(16px, 4vw, 48px);
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-logo { font-size: 2rem; }
+.app-header h1 { font-size: 1.4rem; font-weight: 700; }
+.brand-sub { font-size: 0.85rem; opacity: 0.9; }
+.btn-tema {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.btn-tema:hover { background: rgba(255, 255, 255, 0.35); transform: rotate(-20deg); }
+
+/* ---------------- Layout ---------------- */
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  padding: clamp(16px, 4vw, 40px);
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(18px, 3vw, 28px);
+  box-shadow: var(--shadow);
+}
+.card h2 { font-size: 1.15rem; margin-bottom: 18px; }
+
+/* ---------------- Formulario ---------------- */
+.form-card { position: sticky; top: 24px; }
+.campo { margin-bottom: 16px; display: flex; flex-direction: column; }
+.campo-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-soft); }
+
+input, select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 11px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(230, 0, 126, 0.15);
+}
+input.invalido, select.invalido { border-color: var(--danger); }
+
+.error { color: var(--danger); font-size: 0.78rem; margin-top: 5px; min-height: 1em; }
+
+.acciones-form { display: flex; gap: 10px; margin-top: 8px; }
+
+.btn {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  color: #fff;
+  flex: 1;
+  box-shadow: 0 6px 16px rgba(230, 0, 126, 0.3);
+}
+.btn-primary:hover { box-shadow: 0 8px 22px rgba(230, 0, 126, 0.45); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-soft);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+
+/* ---------------- Panel lista ---------------- */
+.lista-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.metricas { display: flex; gap: 10px; }
+.metrica {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 74px;
+}
+.metrica-num { display: block; font-size: 1.25rem; font-weight: 700; color: var(--brand); font-family: "Poppins", sans-serif; }
+.metrica-label { font-size: 0.7rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+
+.controles { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.controles #buscador { flex: 1; min-width: 200px; }
+
+.grid-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* ---------------- Tarjeta de evento ---------------- */
+.evento {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--brand);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: aparecer 0.35s ease;
+}
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.evento.saliendo { animation: desaparecer 0.3s ease forwards; }
+@keyframes desaparecer {
+  to { opacity: 0; transform: scale(0.9); }
+}
+
+.evento-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.evento h3 { font-size: 1.02rem; line-height: 1.25; word-break: break-word; }
+.chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--accent);
+}
+.chip.Cultural    { background: #d6336c; }
+.chip.Académico   { background: #1c7ed6; }
+.chip.Deportivo   { background: #2f9e44; }
+.chip.Tecnológico { background: #6741d9; }
+.chip.Social      { background: #f08c00; }
+
+.evento-dato { font-size: 0.85rem; color: var(--text-soft); display: flex; align-items: center; gap: 6px; }
+.evento-dato strong { color: var(--text); font-weight: 600; }
+.evento-org { font-size: 0.8rem; color: var(--text-soft); word-break: break-all; }
+
+.evento-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.dias-restantes { font-size: 0.75rem; font-weight: 600; color: var(--ok); }
+.btn-eliminar {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--danger);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-eliminar:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* ---------------- Estado vacío ---------------- */
+.vacio {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-soft);
+}
+.vacio span { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+/* ---------------- Toast ---------------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--text);
+  color: var(--surface);
+  padding: 13px 22px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: transform 0.35s, opacity 0.35s;
+  z-index: 100;
+  max-width: 90vw;
+}
+.toast.mostrar { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.error { background: var(--danger); color: #fff; }
+.toast.ok    { background: var(--ok); color: #fff; }
+
+/* ---------------- Footer ---------------- */
+.app-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .form-card { position: static; }
+}
+@media (max-width: 480px) {
+  .campo-fila { grid-template-columns: 1fr; }
+  .metricas { width: 100%; justify-content: space-between; }
+  .metrica { flex: 1; }
+}

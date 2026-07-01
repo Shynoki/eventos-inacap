@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Registro y gestión de eventos culturales y académicos INACAP. Sumativa 2 - Front End." />
+  <title>Eventos INACAP · Registro y Gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===================== ENCABEZADO ===================== -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">🎓</span>
+      <div>
+        <h1>Eventos INACAP</h1>
+        <p class="brand-sub">Registro y gestión de eventos culturales y académicos</p>
+      </div>
+    </div>
+    <button id="btnTema" class="btn-tema" type="button" aria-label="Cambiar tema claro/oscuro">
+      🌙
+    </button>
+  </header>
+
+  <main class="layout">
+    <!-- ===================== FORMULARIO ===================== -->
+    <section class="card form-card" aria-labelledby="tituloForm">
+      <h2 id="tituloForm">➕ Registrar nuevo evento</h2>
+
+      <!-- novalidate: desactivamos la validación nativa para controlarla por JS -->
+      <form id="formEvento" novalidate>
+        <!-- Campo TEXTO -->
+        <div class="campo">
+          <label for="nombre">Nombre del evento *</label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            maxlength="60"
+            placeholder="Ej: Feria de Innovación Tecnológica"
+            autocomplete="off"
+          />
+          <small class="error" id="errNombre" role="alert"></small>
+        </div>
+
+        <!-- Campo EMAIL -->
+        <div class="campo">
+          <label for="email">Correo del organizador *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            maxlength="80"
+            placeholder="organizador@inacap.cl"
+            autocomplete="off"
+          />
+          <small class="error" id="errEmail" role="alert"></small>
+        </div>
+
+        <div class="campo-fila">
+          <!-- Campo FECHA -->
+          <div class="campo">
+            <label for="fecha">Fecha del evento *</label>
+            <input type="date" id="fecha" name="fecha" />
+            <small class="error" id="errFecha" role="alert"></small>
+          </div>
+
+          <!-- Campo NÚMERO -->
+          <div class="campo">
+            <label for="capacidad">Capacidad máxima *</label>
+            <input
+              type="number"
+              id="capacidad"
+              name="capacidad"
+              min="1"
+              max="10000"
+              placeholder="120"
+            />
+            <small class="error" id="errCapacidad" role="alert"></small>
+          </div>
+        </div>
+
+        <!-- Campo SELECT -->
+        <div class="campo">
+          <label for="categoria">Categoría *</label>
+          <select id="categoria" name="categoria">
+            <option value="">— Selecciona una categoría —</option>
+            <option value="Cultural">🎭 Cultural</option>
+            <option value="Académico">📚 Académico</option>
+            <option value="Deportivo">⚽ Deportivo</option>
+            <option value="Tecnológico">💻 Tecnológico</option>
+            <option value="Social">🤝 Social</option>
+          </select>
+          <small class="error" id="errCategoria" role="alert"></small>
+        </div>
+
+        <div class="acciones-form">
+          <button type="submit" class="btn btn-primary">Agregar evento</button>
+          <button type="reset" class="btn btn-ghost">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===================== PANEL DE EVENTOS ===================== -->
+    <section class="card lista-card" aria-labelledby="tituloLista">
+      <div class="lista-head">
+        <h2 id="tituloLista">📋 Eventos registrados</h2>
+
+        <!-- Métricas / estadísticas dinámicas -->
+        <div class="metricas" id="metricas">
+          <div class="metrica">
+            <span class="metrica-num" id="mTotal">0</span>
+            <span class="metrica-label">Eventos</span>
+          </div>
+          <div class="metrica">
+            <span class="metrica-num" id="mCupos">0</span>
+            <span class="metrica-label">Cupos totales</span>
+          </div>
+          <div class="metrica">
+            <span class="metrica-num" id="mProximo">—</span>
+            <span class="metrica-label">Próximo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controles: búsqueda + filtro -->
+      <div class="controles">
+        <input
+          type="search"
+          id="buscador"
+          placeholder="🔎 Buscar por nombre u organizador…"
+          aria-label="Buscar eventos"
+        />
+        <select id="filtroCategoria" aria-label="Filtrar por categoría">
+          <option value="">Todas las categorías</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Académico">Académico</option>
+          <option value="Deportivo">Deportivo</option>
+          <option value="Tecnológico">Tecnológico</option>
+          <option value="Social">Social</option>
+        </select>
+      </div>
+
+      <!-- Contenedor donde el DOM se renderiza dinámicamente -->
+      <div id="listaEventos" class="grid-eventos" aria-live="polite"></div>
+
+      <!-- Estado vacío -->
+      <div id="estadoVacio" class="vacio">
+        <span aria-hidden="true">🗓️</span>
+        <p>Aún no hay eventos. ¡Registra el primero!</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Sumativa 2 · Front End · INACAP Maipú — Hecho con JavaScript puro, sin frameworks.</p>
+  </footer>
+
+  <!-- Notificaciones tipo "toast" -->
+  <div id="toast" class="toast" role="status" aria-live="assertive"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
